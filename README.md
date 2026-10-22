@@ -1,231 +1,268 @@
 # Token Cost Agent
 
 <p align="center">
-  <strong>Context Engineering for More Efficient LLM Workflows</strong>
+  <strong>Context Engineering · LLM Workflow Optimization · Token Usage Analysis</strong>
   <br>
-  A modular, stateful AI workflow for retrieval, context optimization, and token-usage analysis.
+  A modular Python application for exploring more efficient large language model workflows.
 </p>
 
 <p align="center">
   <a href="https://github.com/maahii-in/token-cost-cutting">
-    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+    <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python">
   </a>
   <a href="https://github.com/maahii-in/token-cost-cutting">
-    <img src="https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge" alt="LangGraph">
+    <img src="https://img.shields.io/badge/LangGraph-1C3C3C?style=flat-square" alt="LangGraph">
   </a>
   <a href="https://groq.com/">
-    <img src="https://img.shields.io/badge/LLM-Groq-F55036?style=for-the-badge" alt="Groq">
+    <img src="https://img.shields.io/badge/LLM-Groq-F55036?style=flat-square" alt="Groq">
   </a>
   <a href="https://github.com/maahii-in/token-cost-cutting/stargazers">
-    <img src="https://img.shields.io/github/stars/maahii-in/token-cost-cutting?style=for-the-badge&color=E3B341" alt="Stars">
+    <img src="https://img.shields.io/github/stars/maahii-in/token-cost-cutting?style=flat-square&color=E3B341" alt="Stars">
+  </a>
+  <a href="https://github.com/maahii-in/token-cost-cutting/commits/main">
+    <img src="https://img.shields.io/github/last-commit/maahii-in/token-cost-cutting?style=flat-square" alt="Last commit">
   </a>
 </p>
 
 <p align="center">
-  <a href="#-overview">Overview</a> ·
-  <a href="#-key-capabilities">Capabilities</a> ·
-  <a href="#-architecture">Architecture</a> ·
-  <a href="#-getting-started">Getting Started</a> ·
-  <a href="#-evaluation">Evaluation</a> ·
-  <a href="#-contributing">Contributing</a>
+  <a href="#overview">Overview</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#getting-started">Getting Started</a> ·
+  <a href="#evaluation">Evaluation</a> ·
+  <a href="#roadmap">Roadmap</a>
 </p>
 
 ---
 
 ## Table of Contents
 
-- [Overview](#-overview)
-- [Problem Statement](#-problem-statement)
-- [Key Capabilities](#-key-capabilities)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Configuration](#-configuration)
-- [Usage](#-usage)
-- [Testing](#-testing)
-- [Evaluation](#-evaluation)
-- [Troubleshooting](#-troubleshooting)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [Security](#-security)
-- [Author](#-author)
+- [Overview](#overview)
+- [Problem Statement](#problem-statement)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Workflow Details](#workflow-details)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Testing](#testing)
+- [Evaluation](#evaluation)
+- [Limitations](#limitations)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Maintainer](#maintainer)
 
-## 🎯 Overview
+## Overview
 
-**Token Cost Agent** is a Python application that explores token-aware processing in large language model (LLM) workflows.
+**Token Cost Agent** is a Python-based application that explores token-aware processing in large language model (LLM) workflows.
 
-Built with **LangGraph**, it connects specialized processing nodes for query classification, memory, retrieval, reranking, context compression, deduplication, prompt construction, response generation, and summarization.
+Built using [LangGraph](https://langchain-ai.github.io/langgraph/), the application organizes query classification, memory processing, document retrieval, reranking, context compression, deduplication, prompt construction, response generation, and summarization into specialized nodes.
 
-The project provides a modular foundation for exploring how context selection and prompt processing influence token consumption, answer quality, and execution efficiency.
+A shared Pydantic state carries information between these nodes, while token-related metrics provide visibility into parts of the execution.
 
-### Design principles
+The project is intended as a foundation for experimenting with context engineering and evaluating how prompt-processing strategies affect token consumption, response quality, and latency.
 
-- **Modularity:** Each workflow stage has a dedicated responsibility.
-- **Context relevance:** Retrieve and prioritize information appropriate to the query.
-- **Token awareness:** Capture available usage metrics during execution.
-- **Configurability:** Centralize model, database, retrieval, and runtime settings.
-- **Measurability:** Evaluate optimization against a baseline rather than assuming savings.
+### Project objectives
 
-> **Project status:** Under active development. Performance improvements and cost savings are not guaranteed and should be validated experimentally.
+- Structure complex LLM workflows into modular processing stages.
+- Route questions using a query-classification component.
+- Retrieve and prioritize context for retrieval-oriented requests.
+- Process retrieved information before prompt construction.
+- Track token-related information by workflow node.
+- Establish a foundation for reproducible optimization experiments.
 
-## 💡 Problem Statement
+> **Project status:** Under development. No specific token savings, cost reductions, or quality improvements are claimed without measured evidence.
 
-LLM applications may consume unnecessary input tokens when prompts contain repetitive information, irrelevant documents, or oversized context.
+## Problem Statement
 
-This can increase request costs and processing time, depending on the model and provider.
+LLM applications can process unnecessary context when prompts contain irrelevant documents, repeated information, or more text than the task requires.
 
-Token Cost Agent explores a modular processing pipeline to investigate these challenges.
+This can increase input-token usage, cost, and processing time. Aggressive compression, however, can also remove information needed for a correct answer.
 
-| Challenge | Processing approach |
+Token Cost Agent explores context-processing stages that can be investigated and measured independently.
+
+| Engineering challenge | Project approach |
 |---|---|
-| Different types of questions | Query classification and conditional routing |
-| Irrelevant retrieved content | Retrieval and document reranking |
-| Excessive prompt context | Context compression |
-| Repeated information | Deduplication |
-| Complex application logic | Stateful LangGraph orchestration |
-| Limited usage visibility | Token-usage metrics |
+| Questions need different processing paths | Query classification and conditional routing |
+| Retrieved documents may vary in relevance | Retrieval and reranking |
+| Context may exceed useful prompt limits | Context-compression stage |
+| Documents may contain repeated information | Deduplication stage |
+| Workflow state must be shared between components | Pydantic `AgentState` |
+| Token usage needs visibility | Per-node token metrics |
+| Optimization needs objective evaluation | Baseline-versus-optimized benchmarking |
 
-The goal is to investigate these techniques while preserving answer relevance and usefulness.
+The key engineering goal is to reduce unnecessary processing **without sacrificing response quality**.
 
-## ✨ Key Capabilities
+## Features
 
-### Query classification and routing
+### 1. Query classification
 
-Categorizes user questions and directs them to the appropriate workflow path.
+The classifier uses keyword-based rules to categorize questions into supported types:
 
-### Retrieval pipeline
+- `chat`
+- `retrieval`
+- `reasoning`
+- `tool`
+- `hybrid`
 
-Processes retrieval-oriented questions through memory, document retrieval, and subsequent context refinement.
+The classification result determines which branch of the LangGraph workflow executes. This is a rule-based classifier, not an independently trained model.
 
-### Context refinement
+### 2. Context retrieval and refinement
 
-Includes reranking, compression, and deduplication components to process retrieved information before prompt construction.
+The retrieval-oriented branch contains dedicated nodes for memory, document retrieval, reranking, compression, and deduplication.
 
-### LLM response generation
+This separation makes individual stages easier to maintain and evaluate.
 
-Integrates with Groq using a configurable language model.
+### 3. LLM response generation
 
-### Token-usage reporting
+The application uses the Groq Python SDK to send prompts to the configured language model.
 
-Displays the metrics recorded in the shared workflow state, organized by node.
+The default model is configured in `config.py` and can be changed through environment-based settings.
 
-### Centralized configuration
+### 4. Shared workflow state
 
-Uses Pydantic Settings to manage provider credentials, database connections, retrieval limits, model selection, logging, and other application settings.
+The `AgentState` model carries the question, query type, memories, document collections, prompt, response, token metrics, and metadata across workflow nodes.
 
-### Modular application state
+### 5. Token-related metrics
 
-Defines structured document and agent-state models using Pydantic, providing a shared representation of the question, query type, retrieved documents, prompt, response, and usage metrics.
+The application records available metrics in its shared state and prints them by node after processing.
 
-## 🧰 Technology Stack
+The current LLM node counts prompt and response text locally using the project's token-counting utility. These counts should not automatically be treated as exact provider-reported billing usage.
+
+### 6. Configurable infrastructure
+
+The configuration supports PostgreSQL, Milvus, Redis, embedding models, reranking, retrieval limits, prompt limits, logging, caching, and cost-tracking settings.
+
+Actual service requirements depend on the components being executed.
+
+## Technology Stack
 
 | Technology | Responsibility |
 |---|---|
-| Python | Core application language |
-| LangGraph | Workflow orchestration and conditional routing |
+| Python | Core application |
+| LangGraph | Stateful graph orchestration |
 | LangChain | LLM application components |
-| Groq | Language model provider |
-| PostgreSQL | Relational database integration |
+| Groq SDK | Language-model API integration |
+| PostgreSQL | Relational database client |
 | Milvus | Vector database integration |
 | Redis | Cache integration |
 | Sentence Transformers | Embedding and reranking model support |
-| `tiktoken` | Token-counting utilities |
-| Pydantic Settings | Validated configuration |
-| pytest | Automated testing |
+| `tiktoken` | Token-counting dependency |
+| Pydantic | Structured data validation |
+| Pydantic Settings | Environment-based configuration |
+| pytest | Test execution |
 
-### Model configuration
+### Configured models
 
-The current application configuration specifies these defaults:
-
-| Component | Configured model |
+| Component | Default |
 |---|---|
 | Language model | `llama-3.3-70b-versatile` |
 | Embedding model | `BAAI/bge-small-en-v1.5` |
 | Reranking model | `BAAI/bge-reranker-base` |
 
-These values can be adjusted through the settings system. Check provider compatibility and model availability before changing them.
+These are configuration defaults, not claims that every model has been benchmarked or that every integration is required for every execution path.
 
-## 🏗️ Architecture
+## Architecture
 
-The application uses LangGraph's `StateGraph` to coordinate nodes around a shared `AgentState`.
+The workflow is defined in `graph.py` using LangGraph's `StateGraph` and the shared `AgentState` model.
 
 ```mermaid
 flowchart TD
-    START([User Question]) --> CLASSIFY[Query Classifier]
+    START([User Question]) --> CLASSIFIER[Keyword-Based Classifier]
 
-    CLASSIFY --> ROUTE{Conditional Routing}
+    CLASSIFIER --> ROUTING{Query Type}
 
-    ROUTE -->|Chat / Tool / Fallback| ROUTER[Router]
-    ROUTE -->|Retrieval / Reasoning / Hybrid| MEMORY[Memory]
+    ROUTING -->|Chat / Tool / Fallback| ROUTER[Router]
+    ROUTING -->|Retrieval / Reasoning / Hybrid| MEMORY[Memory Node]
 
-    MEMORY --> RETRIEVE[Retriever]
-    RETRIEVE --> RERANK[Reranker]
-    RERANK --> COMPRESS[Context Compressor]
-    COMPRESS --> DEDUP[Deduplicator]
-    DEDUP --> PROMPT[Prompt Builder]
+    MEMORY --> RETRIEVER[Retriever]
+    RETRIEVER --> RERANKER[Reranker]
+    RERANKER --> COMPRESSOR[Context Compressor]
+    COMPRESSOR --> DEDUPLICATOR[Deduplicator]
+    DEDUPLICATOR --> PROMPT[Prompt Builder]
 
     PROMPT --> ROUTER
-    ROUTER --> LLM[LLM Generator]
-    LLM --> SUMMARY[Summarizer]
-    SUMMARY --> FINISH([Response and Usage Metrics])
+    ROUTER --> LLM[Groq LLM Node]
+    LLM --> SUMMARIZER[Summarizer]
+    SUMMARIZER --> END([Response and Usage Metrics])
 
-    classDef entry fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A
+    classDef startend fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A
     classDef processing fill:#D1FAE5,stroke:#059669,color:#064E3B
-    classDef optimization fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95
+    classDef optimize fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95
     classDef generation fill:#FFEDD5,stroke:#EA580C,color:#7C2D12
 
-    class START,FINISH entry
-    class CLASSIFY,ROUTE,MEMORY,RETRIEVE,RERANK,ROUTER,SUMMARY processing
-    class COMPRESS,DEDUP,PROMPT optimization
+    class START,END startend
+    class CLASSIFIER,ROUTING,MEMORY,RETRIEVER,RERANKER,ROUTER,SUMMARIZER processing
+    class COMPRESSOR,DEDUPLICATOR,PROMPT optimize
     class LLM generation
 ```
 
-### Execution lifecycle
+### Routing behavior
 
-| Stage | Responsibility |
+The current routing logic in `graph.py` works as follows:
+
+| Query type | Execution path |
 |---|---|
-| 1. Classification | Categorizes the incoming question |
-| 2. Routing | Selects the chat/tool/fallback or retrieval-oriented path |
-| 3. Retrieval | Retrieves relevant information for the selected retrieval path |
-| 4. Reranking | Reorders retrieved documents |
-| 5. Compression | Processes context before prompt construction |
-| 6. Deduplication | Handles repeated context |
-| 7. Prompt construction | Builds the prompt from the available information |
-| 8. Generation | Invokes the configured LLM node |
-| 9. Summarization | Processes the generated response |
-| 10. Reporting | Displays available token-usage metrics |
+| `chat` | Router → LLM → Summarizer |
+| `tool` | Router → LLM → Summarizer |
+| `retrieval` | Memory → Retriever → Reranker → Compressor → Deduplicator → Prompt Builder → Router → LLM → Summarizer |
+| `reasoning` | Memory → Retriever → Reranker → Compressor → Deduplicator → Prompt Builder → Router → LLM → Summarizer |
+| `hybrid` | Memory → Retriever → Reranker → Compressor → Deduplicator → Prompt Builder → Router → LLM → Summarizer |
+| Other classification values | Router → LLM → Summarizer |
 
-The diagram follows the routing and edges defined in [`graph.py`](graph.py). Individual node behavior is implemented in the `nodes/` package.
+The classifier relies on keyword matching, so its output may not always reflect the user's actual intent. Classification quality is a potential area for future improvement.
 
-### State management
+### Shared state model
 
-The shared `AgentState` model contains fields for:
+The state definitions in `state.py` provide two principal data structures.
 
-- User question and query classification.
-- Stored memories.
-- Retrieved, reranked, and compressed documents.
-- Constructed prompt and generated response.
-- Per-node token-usage metrics.
+**`Document`**
+
+Represents a retrieved document with:
+
+- A document identifier.
+- Text content.
+- A relevance score.
+- Source information.
 - Additional metadata.
+- An optional embedding vector.
 
-This shared state allows the workflow's nodes to exchange structured information.
+**`AgentState`**
 
-## 📁 Project Structure
+Represents the current workflow state with:
+
+- `question`
+- `query_type`
+- `memories`
+- `retrieved_docs`
+- `reranked_docs`
+- `compressed_docs`
+- `prompt`
+- `response`
+- `token_usage`
+- `metadata`
+
+Each node receives the shared state, updates its relevant fields, and returns the updated state.
+
+## Project Structure
 
 ```text
 token-cost-cutting/
 │
-├── common/                 # Shared utilities and components
-├── db/                     # Database integrations
-├── nodes/                  # Specialized workflow nodes
+├── common/                 # Shared utilities and logging
+├── db/                     # Database clients and integrations
+├── nodes/                  # Specialized LangGraph nodes
 ├── prompts/                # Prompt templates
-├── tests/                  # Test-related modules
+├── tests/                  # Test-related files
 │
-├── app.py                  # Interactive CLI entry point
+├── app.py                  # Interactive terminal entry point
 ├── config.py               # Centralized application settings
 ├── graph.py                # LangGraph workflow definition
-├── state.py                # Shared document and agent state
+├── state.py                # Document and agent state models
 │
 ├── test_db.py              # Database test module
 ├── test_milvus.py          # Milvus test module
@@ -233,28 +270,28 @@ token-cost-cutting/
 └── .gitignore              # Git exclusions
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-Before running the project, prepare:
+Install or configure the following:
 
 - Python and pip.
 - Git.
 - A valid Groq API key.
 - PostgreSQL credentials.
-- Any additional services required by the workflow nodes you plan to execute.
+- Any additional services needed by the execution path you intend to use.
 
-Milvus and Redis may require separate service setup. Database initialization and service availability depend on your local environment.
+Milvus and Redis may require separate service setup. Database schema initialization and collection initialization depend on the corresponding implementation.
 
-### 1. Clone the repository
+### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/maahii-in/token-cost-cutting.git
 cd token-cost-cutting
 ```
 
-### 2. Create a virtual environment
+### Step 2: Create a virtual environment
 
 **Windows PowerShell**
 
@@ -263,25 +300,25 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-**macOS / Linux**
+**macOS or Linux**
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+### Step 3: Install dependencies
 
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-The project includes machine-learning packages that may download model files on first use. Installation time and resource requirements vary by environment.
+The requirements include machine-learning packages that may download model files on first use. Installation time, memory requirements, and compatibility depend on your environment.
 
-### 4. Configure environment variables
+### Step 4: Configure environment variables
 
-Create a `.env` file in the repository root.
+Create a file named `.env` in the project root.
 
 ```dotenv
 # Application
@@ -289,7 +326,7 @@ APP_NAME=Token Cost Agent
 APP_ENV=development
 APP_DEBUG=true
 
-# Language model provider
+# Groq
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=llama-3.3-70b-versatile
 
@@ -311,25 +348,43 @@ REDIS_PORT=6379
 REDIS_DB=0
 ```
 
-The values above are examples based on `config.py`. Check the configuration file for the complete list of settings and defaults before running the application.
+These values reflect the defaults declared in the current configuration. Review `config.py` for all settings and confirm that your local variable names match the code.
 
-**Security requirement:** Replace the credential placeholders and never commit your `.env` file, API keys, or database passwords to source control.
+`GROQ_API_KEY` and `POSTGRES_PASSWORD` are required by the current settings definition. Because settings are initialized during application imports, provide valid values even if you initially intend to exercise only a path that does not query PostgreSQL.
 
-## ⚙️ Configuration Reference
+Never commit real credentials to GitHub.
 
-Application settings are centralized in `config.py` and loaded through Pydantic Settings.
+### Step 5: Verify the setup
+
+Check the Python version:
+
+```bash
+python --version
+```
+
+Confirm that dependencies install successfully:
+
+```bash
+pip check
+```
+
+Then verify that the required service credentials and endpoints are available before running the application.
+
+## Configuration
+
+Settings are centralized in `config.py` and loaded through Pydantic Settings from environment variables and the `.env` file.
 
 | Setting | Default | Description |
 |---|---|---|
 | `APP_NAME` | `Token Cost Agent` | Application name |
 | `APP_ENV` | `development` | Runtime environment |
-| `APP_DEBUG` | `True` | Debug configuration |
-| `GROQ_API_KEY` | Required | Groq API credential |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` | LLM model identifier |
-| `POSTGRES_HOST` | `localhost` | PostgreSQL server |
+| `APP_DEBUG` | `True` | Debug setting |
+| `GROQ_API_KEY` | Required | Groq API key |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Language-model identifier |
+| `POSTGRES_HOST` | `localhost` | PostgreSQL host |
 | `POSTGRES_PORT` | `5432` | PostgreSQL port |
 | `POSTGRES_DB` | `token_cost_agent` | Database name |
-| `POSTGRES_USER` | `postgres` | Database username |
+| `POSTGRES_USER` | `postgres` | Database user |
 | `POSTGRES_PASSWORD` | Required | Database password |
 | `MILVUS_HOST` | `localhost` | Milvus host |
 | `MILVUS_PORT` | `19530` | Milvus port |
@@ -346,38 +401,32 @@ Application settings are centralized in `config.py` and loaded through Pydantic 
 | `MAX_PROMPT_TOKENS` | `4000` | Prompt token limit |
 | `LOG_LEVEL` | `INFO` | Logging level |
 | `LOG_FILE` | `logs/agent.log` | Log file path |
-| `ENABLE_TOKEN_LOGGING` | `True` | Token logging setting |
-| `ENABLE_COST_TRACKING` | `True` | Cost tracking setting |
+| `ENABLE_TOKEN_LOGGING` | `True` | Token logging flag |
+| `ENABLE_COST_TRACKING` | `True` | Cost tracking flag |
 | `CHECKPOINT_PATH` | `checkpoints/` | Checkpoint path |
 | `CACHE_TTL` | `3600` | Cache time-to-live |
 | `HOST` | `0.0.0.0` | Configured host |
 | `PORT` | `8000` | Configured port |
 
-The application entry point currently runs an interactive CLI. The existence of `HOST` and `PORT` settings does not mean that a web server is started.
+These are configuration values, not a guarantee that every corresponding service or feature is exercised by `app.py`. The current entry point is an interactive CLI; the `HOST` and `PORT` settings do not themselves start an HTTP server.
 
-For the complete configuration, refer to [`config.py`](config.py).
+For authoritative details, refer to [`config.py`](config.py).
 
-## 💻 Usage
+## Running the Application
 
-Start the application from the repository root:
+Run the CLI from the repository root:
 
 ```bash
 python app.py
 ```
 
-The application opens an interactive terminal session.
-
-Example:
+Enter a question at the prompt.
 
 ```text
-============================================================
-        TOKEN COST AGENT
-============================================================
-
 Question > How can I reduce unnecessary context in an LLM prompt?
 ```
 
-After processing, the application prints the generated answer and the available token-usage information recorded by workflow nodes.
+The application invokes the graph and displays an `ANSWER` section followed by `TOKEN USAGE` information recorded in the resulting state.
 
 To exit, enter:
 
@@ -385,11 +434,36 @@ To exit, enter:
 exit
 ```
 
-You can also enter `quit` or `q`, or press `Ctrl+C`.
+The commands `quit` and `q` are also supported. Press `Ctrl+C` to interrupt execution.
 
-The response and usage metrics depend on the successful execution of the configured nodes and external services.
+### Example output format
 
-## 🧪 Testing
+```text
+============================================================
+TOKEN COST AGENT
+============================================================
+
+Question > [Your question]
+
+============================================================
+ANSWER
+============================================================
+
+[Generated response]
+
+============================================================
+TOKEN USAGE
+============================================================
+
+[Workflow node]
+[Available metrics]
+```
+
+This is an illustrative output format, not captured execution output. Actual results depend on provider access, configuration, and workflow execution.
+
+## Testing
+
+The repository includes test modules for database and Milvus functionality.
 
 Run the available test suite:
 
@@ -397,78 +471,151 @@ Run the available test suite:
 pytest
 ```
 
-Run the individual database test modules:
+Run individual modules:
 
 ```bash
 pytest -v test_db.py
 pytest -v test_milvus.py
 ```
 
-For more detailed test output:
+For additional detail:
 
 ```bash
 pytest -vv
 ```
 
-Some tests may require running services, valid credentials, and initialized test data.
+Some tests may need reachable external services, credentials, initialized collections, or test data.
 
-The presence of test modules should not be interpreted as a particular test coverage percentage; coverage must be measured separately.
+Test execution and coverage have not been reported here. Run the suite in your environment to establish the current results.
 
-## 📊 Evaluation
+## Evaluation
 
-A token-efficiency project should demonstrate improvements with reproducible measurements.
+Token optimization should be assessed empirically rather than inferred from the presence of compression or deduplication nodes.
 
-### Recommended evaluation metrics
+A credible evaluation compares a baseline workflow with an optimized workflow using the same dataset, model settings, and task requirements.
 
-| Metric | Measurement goal |
+### Recommended metrics
+
+| Metric | Evaluation purpose |
 |---|---|
-| Input tokens | Count the tokens provided to the model |
-| Output tokens | Count the generated response tokens |
-| Context tokens before processing | Establish the baseline input context |
-| Context tokens after processing | Measure the effect of context refinement |
-| Estimated request cost | Calculate cost using the applicable model pricing |
-| Response quality | Assess relevance, completeness, and usefulness |
-| End-to-end latency | Measure the total execution time |
+| Input tokens | Quantify the prompt tokens sent to the model |
+| Output tokens | Quantify generated response tokens |
+| Context tokens before processing | Establish the baseline context size |
+| Context tokens after processing | Measure the result of context refinement |
+| Estimated request cost | Estimate model cost from applicable pricing |
+| Response quality | Check relevance, correctness, and usefulness |
+| End-to-end latency | Measure total processing time |
 
-### Suggested benchmark procedure
+### Benchmark methodology
 
-1. Prepare a representative dataset of questions and source documents.
-2. Run a baseline workflow without the optimization under evaluation.
-3. Run the corresponding optimized workflow on the same inputs.
-4. Record actual token usage and response quality where available.
-5. Compare cost estimates and latency under equivalent conditions.
-6. Document the model, dataset, configuration, and methodology.
+1. Prepare a fixed set of representative questions and source documents.
+2. Run a baseline without the optimization being evaluated.
+3. Run the optimized configuration on the same inputs.
+4. Record input and output token usage for both runs.
+5. Evaluate response quality using consistent criteria.
+6. Compare token consumption, estimated cost, and latency.
+7. Document the model, dataset, configuration, and test conditions.
 
-The percentage of token reduction can be calculated as:
+### Token reduction formula
+
+When comparable baseline and optimized measurements are available:
 
 \[
-\text{Reduction (\%)} =
+\text{Token Reduction (\%)} =
 \frac{\text{Baseline Tokens} - \text{Optimized Tokens}}
 {\text{Baseline Tokens}} \times 100
 \]
 
-This calculation is valid only when measurements use comparable inputs and counting methods.
+Use actual provider usage metadata when available for billing analysis. A local tokenizer count is useful for estimating text size, but it may differ from a provider's billing count because of model-specific tokenization and message framing.
 
-**No benchmark results or savings percentages are claimed here.** They should be added after running and documenting actual experiments.
+No measured token-saving percentage is claimed in this README.
 
-## 🛠️ Troubleshooting
+## Limitations
 
-| Issue | Checks |
+The current implementation has several important considerations:
+
+- **Keyword-based classification:** Classification is rule-based and may not always identify the user's intent correctly.
+- **Token-counting accuracy:** Locally counted prompt and response text tokens should not automatically be equated with provider billing usage.
+- **External dependencies:** Runtime behavior depends on available credentials, services, installed packages, and model access.
+- **Evaluation required:** Context compression may affect answer quality as well as token count.
+- **Service configuration:** Declared PostgreSQL, Milvus, and Redis settings do not by themselves establish that those services are running or fully initialized.
+- **CLI-focused execution:** The application entry point runs an interactive terminal loop; configured API host and port values do not create a web interface by themselves.
+
+These limitations are also opportunities for future engineering improvements.
+
+## Troubleshooting
+
+| Problem | Suggested checks |
 |---|---|
-| Missing API credentials | Verify `GROQ_API_KEY` and the `.env` file |
-| Configuration validation fails | Compare required fields with `config.py` |
-| PostgreSQL connection error | Verify the service, database, host, port, and credentials |
-| Milvus connection error | Check service availability and collection initialization |
-| Redis connection error | Confirm the Redis service and connection settings |
-| Model initialization fails | Check dependencies, network access, and model availability |
-| Test failures | Inspect the traceback and verify service prerequisites |
-| Unexpected query routing | Review the classifier and routing function in `graph.py` |
+| Missing configuration error | Check required fields in `.env` and `config.py`. |
+| Groq authentication failure | Verify `GROQ_API_KEY` and account access. |
+| Database connection failure | Verify PostgreSQL availability, database name, host, port, and credentials. |
+| Milvus connection error | Check the service endpoint and collection initialization. |
+| Redis connection error | Confirm Redis is reachable at the configured endpoint. |
+| Model initialization failure | Verify package compatibility, model availability, network access, and available resources. |
+| Test failures | Read the traceback and confirm external test dependencies are available. |
+| Unexpected query routing | Inspect `ClassifierNode` and `route_after_classifier` in `graph.py`. |
+| Unexpected token totals | Check the counting utility and distinguish local counts from provider usage. |
 
-## 🗺️ Roadmap
+## Roadmap
 
 Potential future improvements:
 
-- [ ] Establish reproducible token-efficiency benchmarks.
-- [ ] Compare baseline and optimized workflows.
-- [ ] Improve token usage and model-cost reporting.
-- [ ] Evaluate
+- [ ] Add reproducible baseline-versus-optimized benchmarks.
+- [ ] Compare context size before and after each refinement stage.
+- [ ] Report actual provider usage alongside local token estimates.
+- [ ] Improve query classification beyond keyword matching.
+- [ ] Measure response quality alongside token reduction.
+- [ ] Expand node-level unit and integration tests.
+- [ ] Improve startup validation and service health checks.
+- [ ] Improve structured logging and cost reporting.
+- [ ] Document database provisioning and deployment.
+- [ ] Add continuous integration for automated testing.
+
+These items are proposed future work, not claims about features already implemented.
+
+## Contributing
+
+Contributions, bug reports, and technical suggestions are welcome.
+
+1. Fork the repository.
+2. Create a branch for your change.
+3. Implement the change and add relevant tests.
+4. Run the applicable test suite.
+5. Submit a pull request describing the purpose and impact of your change.
+
+```bash
+git checkout -b feature/your-change
+git add .
+git commit -m "Describe your change"
+git push origin feature/your-change
+```
+
+Keep pull requests focused and include reproduction steps for bug fixes where appropriate.
+
+## Security
+
+- Never commit API keys or database credentials.
+- Use environment variables or an appropriate secrets manager.
+- Use separate development credentials for testing.
+- Avoid logging sensitive user questions or retrieved document content.
+- Restrict network access to databases and cache services.
+- Review dependency compatibility and security advisories before upgrading packages.
+- Remove exposed credentials from the provider or service if they are accidentally published.
+
+## Maintainer
+
+**Mahi Budati**
+
+- GitHub: [@maahii-in](https://github.com/maahii-in)
+- Repository: [token-cost-cutting](https://github.com/maahii-in/token-cost-cutting)
+
+---
+
+<p align="center">
+  <strong>Token Cost Agent</strong>
+  <br>
+  <sub>Python · LangGraph · Context Engineering · LLM Applications</sub>
+  <br><br>
+  <a href="#token-cost-agent">Back to top ↑</a>
+</p>
